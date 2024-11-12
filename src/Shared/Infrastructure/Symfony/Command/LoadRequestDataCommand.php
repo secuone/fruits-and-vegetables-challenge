@@ -2,6 +2,7 @@
 
 namespace VeggieVibe\Shared\Infrastructure\Symfony\Command;
 
+use Redis;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class LoadRequestDataCommand extends Command
 {
-    public function __construct()
+    public function __construct(private readonly Redis $client)
     {
         parent::__construct();
     }
@@ -25,7 +26,8 @@ class LoadRequestDataCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln('Whoa!');
+        
+        $output->writeln($this->client->ping());
 
         return Command::SUCCESS;
     }
