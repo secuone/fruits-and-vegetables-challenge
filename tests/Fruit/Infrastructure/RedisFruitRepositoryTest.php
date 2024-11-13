@@ -9,8 +9,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\SerializerInterface;
 use VeggieVibe\Shared\Domain\ValueObject\ItemType;
 use VeggieVibe\Fruit\Infrastructure\Persistence\Redis\RedisFruitRepository;
-use VeggieVibe\Tests\Shared\Infrastructure\NormalizerMock;
+use VeggieVibe\Tests\Fruit\Domain\FruitIdMother;
 use VeggieVibe\Tests\Fruit\Domain\FruitMother;
+use VeggieVibe\Tests\Shared\Infrastructure\NormalizerMock;
 
 final class RedisFruitRepositoryTest extends TestCase
 {
@@ -56,5 +57,20 @@ final class RedisFruitRepositoryTest extends TestCase
         ->with(ItemType::FRUIT->value);
         
         $this->repository->deleteAll();
+    }
+
+    /** @test */
+    public function test_it_should_delete_a_fruit_by_id()
+    {
+        $id = FruitIdMother::create();
+
+        $this->redisClientMock->expects($this->once())
+        ->method('hDel')
+        ->with(
+            ItemType::FRUIT->value,
+            $id->value()
+        );
+        
+        $this->repository->delete($id);
     }
 }

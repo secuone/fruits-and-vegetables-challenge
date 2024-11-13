@@ -10,6 +10,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use VeggieVibe\Shared\Domain\ValueObject\ItemType;
 use VeggieVibe\Vegetable\Infrastructure\Persistence\Redis\RedisVegetableRepository;
 use VeggieVibe\Tests\Shared\Infrastructure\NormalizerMock;
+use VeggieVibe\Tests\Vegetable\Domain\VegetableIdMother;
 use VeggieVibe\Tests\Vegetable\Domain\VegetableMother;
 
 final class RedisVegetableRepositoryTest extends TestCase
@@ -56,5 +57,20 @@ final class RedisVegetableRepositoryTest extends TestCase
         ->with(ItemType::VEGETABLE->value);
         
         $this->repository->deleteAll();
+    }
+
+    /** @test */
+    public function test_it_should_delete_a_vegetable_by_id()
+    {
+        $id = VegetableIdMother::create();
+
+        $this->redisClientMock->expects($this->once())
+        ->method('hDel')
+        ->with(
+            ItemType::VEGETABLE->value,
+            $id->value()
+        );
+        
+        $this->repository->delete($id);
     }
 }
