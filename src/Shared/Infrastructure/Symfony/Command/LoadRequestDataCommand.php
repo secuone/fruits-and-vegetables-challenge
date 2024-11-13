@@ -5,7 +5,9 @@ namespace VeggieVibe\Shared\Infrastructure\Symfony\Command;
 use Redis;
 use InvalidArgumentException;
 use VeggieVibe\Fruit\Domain\Fruit;
+use VeggieVibe\Fruit\Domain\FruitRepository;
 use VeggieVibe\Vegetable\Domain\Vegetable;
+use VeggieVibe\Vegetable\Domain\VegetableRepository;
 use VeggieVibe\Shared\Domain\ValueObject\ItemType;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -23,9 +25,10 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 class LoadRequestDataCommand extends Command
 {
     public function __construct(
-        private readonly Redis $client,
         private readonly DenormalizerInterface $fruitDenormalizer,
-        private readonly DenormalizerInterface $vegetableDenormalizer
+        private readonly DenormalizerInterface $vegetableDenormalizer,
+        private readonly VegetableRepository $vegetableRepository,
+        private readonly FruitRepository $fruitRepository
     ) {
         parent::__construct();
     }
@@ -50,7 +53,8 @@ class LoadRequestDataCommand extends Command
         }
 
         $io->info('Flushing redis...');
-        $this->client->flushAll();
+        $this->vegetableRepository->deleteAll();
+        $this->fruitRepository->deleteAll();
         $io->info('Redis flushed successfully.');
 
         // Read json file
@@ -79,7 +83,8 @@ class LoadRequestDataCommand extends Command
     private function processFruit(array $json): Fruit
     {
         $fruit = $this->fruitDenormalizer->denormalize($json, Fruit::class, 'json');
-        // add fruit
+
+        $this->fruitRepository->save($fruit);
 
         return $fruit;
     }
@@ -88,7 +93,8 @@ class LoadRequestDataCommand extends Command
     {
         $vegetable = $this->vegetableDenormalizer->denormalize($json, Vegetable::class, 'json');
 
-        // add vegetable
+        $this->vegetableRepository->save($vegetable);
+
         return $vegetable;
     }
 }
