@@ -2,7 +2,6 @@
 
 namespace VeggieVibe\Shared\Infrastructure\Symfony\Command;
 
-use Redis;
 use InvalidArgumentException;
 use VeggieVibe\Fruit\Domain\Fruit;
 use VeggieVibe\Fruit\Domain\FruitRepository;
@@ -16,6 +15,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+use VeggieVibe\Shared\Domain\PrimitiveItem;
 
 #[AsCommand(
     name: 'app:load-request-data',
@@ -25,6 +26,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 class LoadRequestDataCommand extends Command
 {
     public function __construct(
+        private readonly SerializerInterface $serializer,
         private readonly DenormalizerInterface $fruitDenormalizer,
         private readonly DenormalizerInterface $vegetableDenormalizer,
         private readonly VegetableRepository $vegetableRepository,
@@ -59,42 +61,34 @@ class LoadRequestDataCommand extends Command
 
         // Read json file
         $io->info('Decoding json...');
-        $jsonContent = json_decode(file_get_contents($filePath), true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $io->error(json_last_error_msg());
-            return Command::FAILURE;
-        }
+        $primitiveItems = $this->serializer->deserialize(file_get_contents($filePath), PrimitiveItem::class.'[]', 'json');
         $io->info('Json decoded successfully.');
 
         $io->info('Adding items...');
-        array_map(function ($json) {
-            return match (ItemType::from($json['type'])) {
-                ItemType::FRUIT => $this->processFruit($json),
-                ItemType::VEGETABLE => $this->processVegetable($json),
-                default => throw new InvalidArgumentException('Unknown item type: ' . $json['type']),
+        array_map(function ($primitiveItem) {
+            return match (ItemType::from($primitiveItem->type())) {
+                ItemType::FRUIT => $this->processFruit($primitiveItem),
+                ItemType::VEGETABLE => $this->processVegetable($primitiveItem),
+                default => throw new InvalidArgumentException('Unknown item type: ' . $primitiveItem->type()),
             };
-        }, $jsonContent);
+        }, $primitiveItems);
 
         $io->success('The process has been completed successfully.');
 
         return Command::SUCCESS;
     }
 
-    private function processFruit(array $json): Fruit
+    private function processFruit(PrimitiveItem $json): void
     {
         $fruit = $this->fruitDenormalizer->denormalize($json, Fruit::class, 'json');
 
         $this->fruitRepository->save($fruit);
-
-        return $fruit;
     }
 
-    private function processVegetable(array $json): Vegetable
+    private function processVegetable(PrimitiveItem $json): void
     {
         $vegetable = $this->vegetableDenormalizer->denormalize($json, Vegetable::class, 'json');
 
         $this->vegetableRepository->save($vegetable);
-
-        return $vegetable;
     }
 }
