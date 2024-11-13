@@ -3,7 +3,6 @@
 namespace VeggieVibe\Fruit\Infrastructure\Serializer;
 
 use VeggieVibe\Fruit\Domain\Fruit;
-use VeggieVibe\Shared\Domain\ValueObject\WeightUnit;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class FruitNormalizer implements NormalizerInterface
