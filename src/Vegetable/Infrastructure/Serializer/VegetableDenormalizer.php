@@ -2,25 +2,30 @@
 
 namespace VeggieVibe\Vegetable\Infrastructure\Serializer;
 
+use InvalidArgumentException;
 use VeggieVibe\Vegetable\Domain\Vegetable;
 use VeggieVibe\Vegetable\Domain\VegetableId;
 use VeggieVibe\Vegetable\Domain\VegetableName;
 use VeggieVibe\Vegetable\Domain\VegetableQuantity;
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use VeggieVibe\Shared\Domain\PrimitiveItem;
+use VeggieVibe\Shared\Domain\UuidGenerator;
 use VeggieVibe\Shared\Domain\ValueObject\WeightUnit;
-use VeggieVibe\Shared\Infrastructure\Symfony\SymfonyUuidGenerator;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class VegetableDenormalizer implements DenormalizerInterface
 {
-    final public function __construct() {}
+    final public function __construct(private readonly UuidGenerator $uuidGenerator) {}
 
     public function denormalize($data, string $type, ?string $format = null, array $context = []): Vegetable
     {
+        if (!$data instanceof PrimitiveItem) {
+            throw new InvalidArgumentException('Parameter is not of type PrimitiveItem');
+        }
 
         return new Vegetable(
-            new VegetableId((new SymfonyUuidGenerator)->generate()),
-            new VegetableName($data['name']),
-            new VegetableQuantity((float) $data['quantity'], WeightUnit::from($data['unit']))
+            new VegetableId($this->uuidGenerator->generate()),
+            new VegetableName($data->name()),
+            new VegetableQuantity($data->quantity(), WeightUnit::from($data->unit()))
         );
     }
 
