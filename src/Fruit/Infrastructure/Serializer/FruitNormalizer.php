@@ -12,12 +12,7 @@ class FruitNormalizer implements NormalizerInterface
 
     public function normalize($object, ?string $format = null, array $context = []): array
     {
-        return [
-            'id' => $object->id()->value(),
-            'name' => $object->name()->value(),
-            'quantity' => $object->quantity()->convertToGrams(),
-            'unit' => WeightUnit::G
-        ];
+        return $object->toArray();
     }
 
     public function supportsNormalization($data, ?string $format = null, array $context = []): bool
