@@ -9,6 +9,7 @@ use VeggieVibe\Vegetable\Domain\VegetableId;
 use VeggieVibe\Vegetable\Domain\VegetableRepository;
 use VeggieVibe\Shared\Domain\ValueObject\ItemType;
 use VeggieVibe\Shared\Infrastructure\Persistence\Redis\RedisRepository;
+use VeggieVibe\Vegetable\Domain\Vegetables;
 
 final class RedisVegetableRepository extends RedisRepository implements VegetableRepository
 {
@@ -22,6 +23,17 @@ final class RedisVegetableRepository extends RedisRepository implements Vegetabl
     public function findById(VegetableId $id): ?Vegetable
     {
         return $this->searchById($id, ItemType::VEGETABLE);
+    }
+
+    public function findAll(): ?Vegetables
+    {
+       $result = $this->searchAll(ItemType::FRUIT);
+
+        if (!$result) {
+            return null;
+        };
+
+        return new Vegetables($result);
     }
 
     public function delete(VegetableId $id): void

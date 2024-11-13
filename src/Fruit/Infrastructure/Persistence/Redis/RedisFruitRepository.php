@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VeggieVibe\Fruit\Infrastructure\Persistence\Redis;
 
 use VeggieVibe\Fruit\Domain\Fruit;
+use VeggieVibe\Fruit\Domain\Fruits;
 use VeggieVibe\Fruit\Domain\FruitId;
 use VeggieVibe\Fruit\Domain\FruitRepository;
 use VeggieVibe\Shared\Domain\ValueObject\ItemType;
@@ -23,6 +24,17 @@ final class RedisFruitRepository extends RedisRepository implements FruitReposit
     public function findById(FruitId $id): ?Fruit
     {
         return $this->searchById($id, ItemType::FRUIT);
+    }
+
+    public function findAll(): ?Fruits
+    {
+       $result = $this->searchAll(ItemType::FRUIT);
+
+        if (!$result) {
+            return null;
+        };
+
+        return new Fruits($result);
     }
 
     public function delete(FruitId $id): void
