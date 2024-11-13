@@ -7,6 +7,6 @@ namespace VeggieVibe\Fruit\Domain;
 interface FruitRepository
 {
     public function save(Fruit $fruit): void;
-    public function find(FruitId $id): ?Fruit;
+    public function findById(FruitId $id): ?Fruit;
     public function delete(FruitId $id): void;
 }
