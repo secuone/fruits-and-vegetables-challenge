@@ -33,7 +33,7 @@ abstract class RedisRepository
     protected function remove(Uuid $uuid): void
     {
         $this->client->hDel(
-            static::PREFIX,
+            static::PREFIX->value,
             $uuid->value()
         );
     }
