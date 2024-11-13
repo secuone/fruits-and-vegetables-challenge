@@ -18,6 +18,15 @@ final class Fruit implements Item
         private readonly FruitQuantity $quantity
     ) {}
 
+    public static function create(FruitId $id, FruitName $name, FruitQuantity $quantity): self
+	{
+		$course = new self($id, $name, $quantity);
+
+		// Domain event goes here
+
+		return $course;
+	}
+
     public function id(): FruitId
     {
         return $this->id;
