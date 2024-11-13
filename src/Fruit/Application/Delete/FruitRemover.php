@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace VeggieVibe\Fruit\Application\FruitDeletion;
+namespace VeggieVibe\Fruit\Application\Delete;
 
 use VeggieVibe\Fruit\Domain\FruitId;
 use VeggieVibe\Fruit\Domain\FruitRepository;
 
-final readonly class FruitDeletion
+final readonly class FruitRemover
 {
 	public function __construct(private FruitRepository $repository) {}
 

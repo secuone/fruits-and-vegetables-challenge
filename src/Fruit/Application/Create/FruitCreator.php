@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VeggieVibe\Fruit\Application\FruitCreator;
+namespace VeggieVibe\Fruit\Application\Create;
 
 use VeggieVibe\Fruit\Domain\Fruit;
 use VeggieVibe\Fruit\Domain\FruitId;
