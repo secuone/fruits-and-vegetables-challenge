@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace VeggieVibe\Shared\Domain\ValueObject;
 
+use InvalidArgumentException;
 use VeggieVibe\Shared\Domain\Uuid as UuidInterface;
+use VeggieVibe\Shared\Domain\UuidValidator;
 
 abstract class Uuid implements UuidInterface
 {
-	final public function __construct(protected string $value) {}
+	final public function __construct(
+		protected string $value
+	) {}
 
 	final public function value(): string
 	{
