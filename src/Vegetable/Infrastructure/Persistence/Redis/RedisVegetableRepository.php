@@ -27,7 +27,7 @@ final class RedisVegetableRepository extends RedisRepository implements Vegetabl
 
     public function findAll(): ?Vegetables
     {
-       $result = $this->searchAll(ItemType::FRUIT);
+       $result = $this->searchAll(ItemType::VEGETABLE);
 
         if (!$result) {
             return null;
