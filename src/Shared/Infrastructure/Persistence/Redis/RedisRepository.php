@@ -37,4 +37,9 @@ abstract class RedisRepository
             $uuid->value()
         );
     }
+
+    protected function flushAll(): void
+    {
+        $this->client->del(static::PREFIX->value);
+    }
 }

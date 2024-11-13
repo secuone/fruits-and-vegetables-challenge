@@ -33,4 +33,9 @@ final class RedisFruitRepository extends RedisRepository implements FruitReposit
     private function toFruit($data) {
         return $data;
     }
+
+    public function deleteAll(): void
+    {
+        $this->flushAll();
+    }
 }

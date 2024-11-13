@@ -32,4 +32,9 @@ final class RedisVegetableRepository extends RedisRepository implements Vegetabl
     private function toVegetable($data) {
         return $data;
     }
+
+    public function deleteAll(): void
+    {
+        $this->flushAll();
+    }
 }
