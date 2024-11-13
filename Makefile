@@ -27,6 +27,10 @@ restart: # Restart the containers
 	@echo "Restarting containers..."
 	$(DOCKER_COMPOSE) restart
 
+test: # Run unit tests
+	@echo "Running unit tests..."
+	docker exec -it $(PHP_CONTAINER_NAME) php bin/phpunit
+
 php-shell: # Get a shell inside the PHP container
 	@echo "Entering PHP container..."
 	docker exec -it $(PHP_CONTAINER_NAME) /bin/sh
