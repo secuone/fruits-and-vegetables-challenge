@@ -22,16 +22,12 @@ final class RedisFruitRepository extends RedisRepository implements FruitReposit
 
     public function findById(FruitId $id): ?Fruit
     {
-        return $this->toFruit($this->searchById($id));
+        return $this->searchById($id, ItemType::FRUIT);
     }
 
     public function delete(FruitId $id): void
     {
         $this->remove($id);
-    }
-
-    private function toFruit($data) {
-        return $data;
     }
 
     public function deleteAll(): void

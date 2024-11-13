@@ -7,13 +7,17 @@ namespace VeggieVibe\Shared\Infrastructure\Persistence\Redis;
 use Redis;
 use VeggieVibe\Shared\Domain\Item;
 use VeggieVibe\Shared\Domain\Uuid;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use VeggieVibe\Shared\Domain\PrimitiveItem;
+use VeggieVibe\Shared\Domain\ValueObject\ItemType;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 abstract class RedisRepository
 {
 	public function __construct(
         private readonly Redis $client,
-        private readonly NormalizerInterface $serializer
+        private readonly SerializerInterface $serializer,
+        protected readonly DenormalizerInterface $denormalizer
     ) {}
 
     protected function persist(Item $item): void
@@ -25,9 +29,20 @@ abstract class RedisRepository
         );
     }
 
-    protected function searchById(Uuid $uuid): ?Item
+    protected function searchById(Uuid $uuid, ItemType $itemType)
     {
-        return null;
+        $jsonData = $this->client->hGet(
+            static::PREFIX->value,
+            $uuid->value()
+        );
+
+        if ($jsonData === null) {
+            return null;
+        }
+
+        $primitiveItem = $this->serializer->deserialize($jsonData, PrimitiveItem::class, 'json');
+
+        return $this->denormalizer->denormalize($primitiveItem, $itemType->class());
     }
 
     protected function remove(Uuid $uuid): void
