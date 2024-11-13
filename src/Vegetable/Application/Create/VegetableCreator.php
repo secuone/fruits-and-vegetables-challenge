@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VeggieVibe\Vegetable\Application\VegetableCreator;
+namespace VeggieVibe\Vegetable\Application\Create;
 
 use VeggieVibe\Vegetable\Domain\Vegetable;
 use VeggieVibe\Vegetable\Domain\VegetableId;
